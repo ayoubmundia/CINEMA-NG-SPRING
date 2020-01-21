@@ -27,3 +27,28 @@
     padding: 2%;
   }
   
+  .new-product {
+    border: 1px solid gainsboro;
+    height: 100%;
+    min-height: 280px;
+}
+.center-center-element {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.butn-vio {
+	border-radius: 6px;
+	background-color: #a53e43;
+	color: white;
+    transition: 0.1s linear;
+    float: right;
+	cursor: pointer;
+}
+.butn-vio:hover {
+	background-color: #dc3545;
+}
+.pd0 {
+    padding: 10px;
+}

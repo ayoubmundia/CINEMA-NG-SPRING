@@ -3,6 +3,8 @@ import { CinemaService } from '../services/cinema.service';
 import { FormBuilder, FormGroup, Validators , ReactiveFormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Cinema } from '../cinema/Cinema';
+import { HttpClient } from '@angular/common/http';
+declare var $ : any;
 
 @Component({
   selector: 'app-cinema',
@@ -24,17 +26,19 @@ export class CinemaComponent implements OnInit {
   private selectedTickets;
   public new_city: FormGroup;
   public up_city: FormGroup;
+  public new_salle: FormGroup;
+  public up_salle: FormGroup;
   cinema: Cinema = new Cinema();
   
   constructor(private cinemaService : CinemaService,
     private formBuilder: FormBuilder,
-    private router: Router ) { }
+    private router: Router,
+    private http: HttpClient ) { }
 
   ngOnInit() {
     this.cinemaService.getVilles().subscribe(
       data =>{
         this.villes = data;
-        console.log(data)
       },
       err =>{
         console.log(err);
@@ -48,12 +52,20 @@ export class CinemaComponent implements OnInit {
         altitude_new_city: ['', [Validators.required]],
         latitude_new_city: ['', [Validators.required]]
     });
+    this.new_salle = this.formBuilder.group({
+      name_of_salle: ['', [Validators.required]],
+      number_of_place: ['', [Validators.required]]
+  });
     this.up_city = this.formBuilder.group({
       name_up_city: ['', [Validators.required]],
       longitude_up_city: ['', [Validators.required]],
       altitude_up_city: ['', [Validators.required]],
       latitude_up_city: ['', [Validators.required]]
   });
+  this.up_salle = this.formBuilder.group({
+    name_up_salle: ['', [Validators.required]],
+    number_up_place: ['', [Validators.required]]
+});
 
   }
   //shadow is here Add new city 
@@ -66,7 +78,6 @@ export class CinemaComponent implements OnInit {
     const loc = this.new_city.get('longitude_new_city').value;
     const ac = this.new_city.get('altitude_new_city').value;
     const lac= this.new_city.get('latitude_new_city').value;
-    console.log("test")
     this.cinemaService.AddCity(nc,loc,ac,lac).subscribe(
       ()=>{
         document.location.reload(true)
@@ -103,11 +114,6 @@ export class CinemaComponent implements OnInit {
       this.send_lac = v.latitude; 
     }
     
-    // const loc = this.up_city.get('longitude_up_city').value;
-    // const ac = this.up_city.get('altitude_up_city').value;
-    // const lac= this.up_city.get('latitude_up_city').value;
-    
-    console.log(v.id+'-'+this.send_nc+'-'+this.send_loc+'-'+this.send_ac+'-'+this.send_lac);
     this.cinemaService.UpCity(v.id,this.send_nc ,this.send_loc,this.send_ac,this.send_lac).subscribe(
       ()=>{
         document.location.reload(true)
@@ -115,7 +121,6 @@ export class CinemaComponent implements OnInit {
     );
   }
   onDeletVille(v) {
-    console.log(v)
     this.cinemaService.deleteCity(v.id).subscribe(
             ()=> {
               console.log('this would have removed', v.id);
@@ -130,7 +135,6 @@ export class CinemaComponent implements OnInit {
         this.cinemas = data;
         this.salles = "";
         this.currentVille = v;
-        console.log(this.currentVille)
       },
       err =>{
         console.log(err);
@@ -143,14 +147,11 @@ export class CinemaComponent implements OnInit {
     this.cinemaService.getSalles(c)
       .subscribe(data=>{
         this.salles = data;
-        console.log(data)
         this.salles._embedded.salles.forEach(
         salle=>{
-          console.log(salle)
           this.cinemaService.getProjections(salle)
             .subscribe(data=>{
               salle.projections = data;
-              console.log(data)
             },err=>{
               console.log(err);
             })
@@ -213,9 +214,6 @@ export class CinemaComponent implements OnInit {
   }
 
   onSubmit(){
-    console.log(this.cinema);
-    // console.log(this.currentVille._links.ville.href);
-    console.log(this.currentVille._links.ville.href.substring(this.currentVille._links.ville.href.lastIndexOf('/') + 1));
     let n = this.currentVille._links.ville.href.substring(this.currentVille._links.ville.href.lastIndexOf('/') + 1);
     this.cinemaService.ajouterCinema(this.cinema,n)
       .subscribe((data:any) =>{
@@ -228,11 +226,81 @@ export class CinemaComponent implements OnInit {
       })
       
   }
+  onSubmitUpdate(){
+    let n = this.currentCinema._links.self.href.substring(this.currentCinema._links.self.href.lastIndexOf('/') + 1);
+    let v = this.currentCinema.id;
+    this.cinemaService.updateCinema(this.cinema,n,v)
+      .subscribe((data:any) =>{
+        data => console.log(data)
+        $('#updatecinemaModel').modal('hide');
+        this.onGetCinema(this.currentVille);
+      },
+      err=>{
+        console.log("error");
+      })
+  }
   onCancel(){
     this.cinema = new Cinema();
   }
   //End 
-  onUpdatecinema(){
-    console.log(195);
+  onUpdatecinema(c){
+    this.currentCinema = c ;
+    this.cinema.name = c.name;
+    this.cinema.altitude = c.altitude;
+    this.cinema.logitude = c.logitude;
+    this.cinema.latitude = c.latitude;
+    this.cinema.nombreSalles = c.nombreSalles;
   }
+
+  //deleteCinema
+  deleteCinemaModal(c){
+    this.currentCinema = c ;
+  }
+  confirmSuppression(){
+    let n = this.currentCinema._links.self.href.substring(this.currentCinema._links.self.href.lastIndexOf('/') + 1);
+    this.cinemaService.deleteCinema(n)
+      .subscribe((data:any) =>{
+        data => console.log(data)
+        this.cinema = new Cinema();
+        this.onGetCinema(this.currentVille);
+      },
+      err=>{
+        console.log("error");
+      })
+  }
+  //shadow was here 
+  onGetthisSalles(c){
+    
+    let n = c._links.self.href.substring(c._links.self.href.lastIndexOf('/') + 1);
+    sessionStorage.setItem("thiscinema",n);
+  }
+  AddNewSalle(){
+    var postData ={ "name" : this.new_salle.get('name_of_salle').value ,"nombrePlaces" : this.new_salle.get('number_of_place').value};
+    console.log(postData);
+    let id_cinema = sessionStorage.getItem("thiscinema");
+    console.log(id_cinema)
+    this.http.post("http://localhost:8089/saveSalle/"+id_cinema, postData).subscribe(
+      ()=>{
+        $('#AddNewSalle').modal('hide');
+        this.onGetSalles(this.currentCinema);
+      }
+    );
+  }
+  onGetInfoSalles(s){
+    sessionStorage.setItem("thisIdSalle",s.id);
+    this.up_salle.setValue({
+      name_up_salle : s.name,
+      number_up_place : s.nombrePlaces
+    });
+  }
+  UpdateInfoSalle(){
+    var postData ={ "name" : this.up_salle.get('name_up_salle').value ,"nombrePlaces" : this.up_salle.get('number_up_place').value};
+    this.http.put("http://localhost:8089/updateSalle/id="+sessionStorage.getItem("thisIdSalle")+"&cinema="+this.currentCinema.id, postData).subscribe(
+      ()=>{
+        $('#UpdateSalle').modal('hide');
+        this.onGetSalles(this.currentCinema);
+      }
+    );
+  }
+
 }

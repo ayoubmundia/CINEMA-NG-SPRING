@@ -69,24 +69,29 @@
         <div class="col-md-12" *ngIf="cinemas">
           <div class=" col-md-3 btn-group" *ngFor="let c of cinemas._embedded.cinemas" >
             <button type="button" class="btn btn-danger" (click)="onGetSalles(c)" [ngClass]="{'border': c == currentCinema}">{{c.name}} </button>
-            <button  type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button  (click)="onGetSalles(c)" type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="sr-only">Toggle Dropdown</span>
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item" (click)="onUpdatecinema()">Update Cinema</a>
-              <a class="dropdown-item" href="#">Delete Cinema</a>
+              <a class="dropdown-item" (click)="onUpdatecinema(c)" data-target="#updatecinemaModel" data-toggle="modal" >Update Cinema</a>
+              <a class="dropdown-item" (click)="deleteCinemaModal(c)" data-toggle="modal" data-target="#rejectModal">Delete Cinema</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Add New Salle</a>
+              <a class="dropdown-item clickable"  (click)="onGetthisSalles(c)" data-toggle="modal" data-target="#AddNewSalle">Add New Salle</a>
             </div>
           </div>
         </div>
-
+        <!--Shado was here-->
         <div class="card  bg-light">
           <div class="col-md-12 padding-salle" *ngIf="salles">
             <div class="row justify-content-around">
               <div class="card bg-dark col-md-5 mb-3" *ngFor="let s of salles._embedded.salles">
-                <div class="card-header">{{s.name}}</div>
-                <div class="card-body" *ngIf="s.projections">
+                <div class="card-header">{{s.name}} 
+                  <a (click)="onGetInfoSalles(s)" data-toggle="modal" data-target="#UpdateSalle">
+                    <i class="fas fa-pen rounded-circle pd0 butn-vio"></i>
+                  </a>
+                </div>
+                <div class="card-body" *ngIf="s.projections != null">
+                  <div class="" *ngIf="s.projections._embedded.projectionFilms.length != 0">
                   <div class="row">
                     <div class="col-md-5">
                       <img width="160" height="180"
@@ -143,11 +148,22 @@
                     </div>
                   </div>
                 </div>
+                <div class="new-product" *ngIf="s.projections._embedded.projectionFilms.length == 0">
+                  <div class="center-center-element">
+                      <div class="text-center">
+                          <i class="far fa-plus-square size-25"></i>
               </div>
+              <div class="text-center">
+                Add Projection
             </div>
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
     </div>
   </div>
 </div>
@@ -213,6 +229,7 @@
     </div>
   </div>
 </div>
+
 <!-- Modal Add  Cinema-->
 <div class="modal fade bd-example-modal-lg" id="addcinemaModel" tabindex="-1" role="dialog"
   aria-labelledby="myLargeModalLabel" aria-hidden="true">
@@ -272,3 +289,133 @@
     </div>
   </div>
 </div>
+<!-- Modal Delete Cinema -->
+<div class="modal fade" id="rejectModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+      <div class="modal-content" >
+          <div class="modal-header">
+              <h5 class="modal-title" id="rejectModalLabel">Confirmation la suppression</h5>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+              </button>
+          </div>
+          <div class="modal-body">
+              <p class="mb-0">Voulez-vous vraiment supprimer la cinema .</p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-outline-secondary" data-dismiss="modal" >Annuler</button>
+              <button type="button" class="btn btn-outline-danger" data-dismiss="modal" (click)="confirmSuppression()">Supprimer</button>
+          </div>
+      </div>
+  </div>
+</div>
+<!-- Modal Update Cinema-->
+<div class="modal fade bd-example-modal-lg" id="updatecinemaModel" tabindex="-1" role="dialog"
+  aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" data-target="#modal">
+    <div class="modal-content">
+      <form (ngSubmit)="onSubmitUpdate()" *ngIf="currentCinema" >
+        <div class="modal-header" >
+          <h5 class="modal-title" id="exampleModalLabel" *ngIf="currentVille">Modifier :
+            {{ currentCinema.name }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Nom</span>
+            </div>
+            <input type="text" name="name" [value]="currentCinema!= 'undefined'?currentCinema.name:''" [(ngModel)]="cinema.name" class="form-control" aria-label="Default"
+            aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Logitude</span>
+            </div>
+            <input type="number" name="logitude" [value]="currentCinema!= 'undefined'?currentCinema.logitude:''" [(ngModel)]="cinema.logitude"  class="form-control" aria-label="Default"
+            aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Latitude</span>
+            </div>
+            <input type="number" name="latitude" [value]="currentCinema!= 'undefined'?currentCinema.latitude:''"  [(ngModel)]="cinema.latitude" class="form-control"
+              aria-label="Default"  aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Altitude</span>
+            </div>
+            <input type="number" name="altitude" [value]="currentCinema!= 'undefined'?currentCinema.altitude:''" [(ngModel)]="cinema.altitude" class="form-control" aria-label="Default"
+              aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Nbr Salles</span>
+            </div>
+            <input type="number" name="nombreSalles" [value]="currentCinema!= 'undefined'?currentCinema.nombreSalles:''"  [(ngModel)]="cinema.nombreSalles" 
+                class="form-control" 
+              aria-label="Default" aria-describedby="inputGroup-sizing-default" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancel()">Annuler</button>
+          <button type="submit" class="btn btn-primary" >Modifier</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--Shado was here-->
+<!--Modal Add new Salle-->
+<div class="modal fade" id="AddNewSalle" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Add New Salle</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="new_salle" (ngSubmit)="AddNewSalle()">
+      <div class="modal-body">
+        <label class="control-label">Name of Salle:</label>
+          <input class="form-control" type="text" formControlName="name_of_salle">
+          <label class="control-label">Nombre de salle</label>
+          <input class="form-control" type="number" formControlName="number_of_place">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" >Ajouter</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--Modal Update Salle-->
+<div class="modal fade" id="UpdateSalle" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Update Salle</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="up_salle" (ngSubmit)="UpdateInfoSalle()">
+      <div class="modal-body">
+        <label class="control-label">Name of Salle:</label>
+          <input class="form-control" type="text" formControlName="name_up_salle">
+          <label class="control-label">Nombre de salle</label>
+          <input class="form-control" type="number" formControlName="number_up_place">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary" >Modifier</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!--Shado was here-->

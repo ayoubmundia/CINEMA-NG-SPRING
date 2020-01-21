@@ -81,20 +81,11 @@ public class CinemaRestController {
 	}
 	
 	@RequestMapping(value ="/saveSalle/{id}" , method=RequestMethod.POST)
-	public Salle saveCinema(@RequestBody Salle salle,@PathVariable Long id ){ 
+	public Salle saveSalle(@RequestBody Salle salle,@PathVariable Long id ){ 
 		salle.setCinema(cinemas.findById(id).get());
 		return salles.save(salle);
 	}
-	
-	@RequestMapping(value ="/updateCinema/id={id}&ville={idVille}" , method=RequestMethod.PUT)
-	public Cinema updateCinema(@RequestBody Cinema c,@PathVariable Long id,@PathVariable Long idVille){ 
-//		Ville V = villes.getOne(id_ville);
-//		c.setVille(V);
-//		return cinemas.saveAndFlush(c);
-		c.setVille(villes.getOne(idVille));
-		cinemas.getOne(id).equals(c);
-		return c;
-	}
+
 	
 	@RequestMapping(value="/deleteCinema/{id}", method=RequestMethod.DELETE)
 	public void deleteCinema(@PathVariable Long id ){ 
@@ -104,6 +95,20 @@ public class CinemaRestController {
 		cinemas.deleteById(id);
 	}
 	
+
+	@RequestMapping(value="/updateCinema/id={id}&ville={id_ville}", method=RequestMethod.PUT)
+	public Cinema updateCinema(@RequestBody Cinema cinema, @PathVariable Long id,@PathVariable Long id_ville){
+		cinema.setId(id);
+		cinema.setVille(villes.findById(id_ville).get());
+		return cinemas.saveAndFlush(cinema);
+	}
+	
+	@RequestMapping(value="/updateSalle/id={id}&cinema={id_cinema}", method=RequestMethod.PUT)
+	public Salle updateSalle(@RequestBody Salle salle, @PathVariable Long id, @PathVariable Long id_cinema){
+		salle.setId(id);
+		salle.setCinema(cinemas.findById(id_cinema).get());
+		return salles.saveAndFlush(salle);
+	}
 }
 
 class TicketForm {

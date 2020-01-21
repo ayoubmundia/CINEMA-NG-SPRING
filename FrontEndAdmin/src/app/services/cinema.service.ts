@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+
 @Injectable({
   providedIn: 'root'
 })
@@ -53,5 +54,17 @@ export class CinemaService {
   ajouterCinema(cinema: Object, ville: number): Observable<Object> {
     return this.http.post(this.host+"/saveCinema/"+ville, cinema );
   }
-  
+  //update cinema
+  updateCinema(cinema: Object, id: number, id_ville: number): Observable<Object> {
+    return this.http.put(this.host+"/updateCinema/id="+id+"&ville="+id_ville, cinema );
+  }
+  //add salle
+  ajouterSalle(salle: Object, cinema: number): Observable<Object> {
+    return this.http.post(this.host+"/saveSalle/"+cinema, salle );
+  }
+  //delete cinema
+  deleteCinema(cinema: number): Observable<Object> {
+    return this.http.delete(this.host+"/cinemas/"+cinema );
+  }
+
 }
