@@ -165,13 +165,16 @@ public class CinemaRestController {
 		
 	}
 	
-	@RequestMapping(value="uploadFile", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file) throws IOException{
+	@RequestMapping(value="uploadFile/id={id}", method=RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	public ResponseEntity<Object> uploadFile(@RequestParam("file") MultipartFile file, @PathVariable Long id) throws IOException{
 		File convertFile = new File(System.getProperty("user.home")+"/cinema/images/"+file.getOriginalFilename());
 		convertFile.createNewFile();
 		FileOutputStream fout  =new FileOutputStream(convertFile);
 		fout.write(file.getBytes());
 		fout.close();
+		System.out.println(file.getOriginalFilename());
+		films.findById(id).get().setPhoto(file.getOriginalFilename());
+		films.save(films.findById(id).get());
 		return new ResponseEntity<>("File is uploaded Successfully",HttpStatus.OK);
 		
 	}
