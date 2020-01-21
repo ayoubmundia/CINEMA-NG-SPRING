@@ -66,5 +66,18 @@ export class CinemaService {
   deleteCinema(cinema: number): Observable<Object> {
     return this.http.delete(this.host+"/cinemas/"+cinema );
   }
+  //get Salles for a new projection
+  public getSallesByCinemaId(id_cinema: number){
+    return this.http.get(this.host+"/cinemas/"+id_cinema+"/salles");
+  }
+  public getFilms(){
+    return this.http.get(this.host+"/films/");
+  }
+  public getSeances(){
+    return this.http.get(this.host+"/seances/");
+  }
+  ajouterProjection(projection: any ): Observable<Object> {
+    return this.http.post(this.host+"/saveProjection/salle="+projection.salle+"&film="+projection.film+"&seance="+projection.seance+"&price="+projection.price);
+  }
 
 }

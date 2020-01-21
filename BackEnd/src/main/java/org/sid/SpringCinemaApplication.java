@@ -3,6 +3,7 @@ package org.sid;
 import org.sid.entites.Cinema;
 import org.sid.entites.Film;
 import org.sid.entites.Salle;
+import org.sid.entites.Seance;
 import org.sid.entites.Ville;
 import org.sid.metier.ICinemaInitService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,7 @@ public class SpringCinemaApplication implements CommandLineRunner{
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("Welcome to Spring cinema Application");
-		restConfiguration.exposeIdsFor(Film.class,Salle.class,Ville.class,Cinema.class);
+		restConfiguration.exposeIdsFor(Film.class,Salle.class,Ville.class,Cinema.class,Seance.class);
 		cinemaService.initVilles();
 		cinemaService.initCinemas();
 		cinemaService.initSalles();

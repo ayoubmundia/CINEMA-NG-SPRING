@@ -3,6 +3,7 @@ import { CinemaService } from '../services/cinema.service';
 import { FormBuilder, FormGroup, Validators , ReactiveFormsModule} from '@angular/forms';
 import { Router } from '@angular/router';
 import { Cinema } from '../cinema/Cinema';
+import { Projection } from '../cinema/Projection';
 import { HttpClient } from '@angular/common/http';
 declare var $ : any;
 
@@ -28,7 +29,14 @@ export class CinemaComponent implements OnInit {
   public up_city: FormGroup;
   public new_salle: FormGroup;
   public up_salle: FormGroup;
+
+  public projSalles : any;
+  public projSeances : any;
+  public projFilms : any;
+  
   cinema: Cinema = new Cinema();
+
+  projection: Projection = new Projection();
   
   constructor(private cinemaService : CinemaService,
     private formBuilder: FormBuilder,
@@ -302,6 +310,59 @@ export class CinemaComponent implements OnInit {
         this.onGetSalles(this.currentCinema);
       }
     );
+  }
+  //projection part
+  onNewProjection(c){
+    console.log(this.currentVille);
+    console.log(c.id);
+    this.cinemaService.getSallesByCinemaId(c.id)
+      .subscribe((data:any) =>{
+        data => console.log(data)
+        this.projSalles = data;
+      },
+      err=>{
+        console.log("error");
+      })
+
+    this.cinemaService.getFilms()
+    .subscribe((data:any) =>{
+      data => console.log(data)
+      this.projFilms = data;
+    },
+    err=>{
+      console.log("error");
+    })
+    this.cinemaService.getSeances()
+    .subscribe((data:any) =>{
+      data => console.log(data)
+      this.projSeances = data;
+    },
+    err=>{
+      console.log("error");
+    })
+  }
+  onSubmitProj(){
+    console.log(this.projection);
+    this.cinemaService.ajouterProjection(this.projection)
+    .subscribe((data:any) =>{
+      data => console.log(data)
+      console.log(data);
+      $('#projectionModal').modal('hide');
+      this.onGetSalles(this.currentCinema);
+    },
+    err=>{
+      console.log("error");
+    })
+  }
+  seanceChange(x){
+    this.projection.seance = x;
+  }
+  salleChange(x){
+    this.projection.salle = x;
+  }
+  filmChange(x){
+    console.log(x);
+    this.projection.film = x;
   }
 
 }

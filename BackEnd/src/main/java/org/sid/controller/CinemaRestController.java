@@ -5,18 +5,26 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.sid.dao.CinemaRep;
 import org.sid.dao.FilmRep;
+import org.sid.dao.PlaceRep;
+import org.sid.dao.PrejectioFIlmRep;
 import org.sid.dao.SalleRep;
+import org.sid.dao.SeanceRep;
 import org.sid.dao.TicketRep;
 import org.sid.dao.VilleRep;
 import org.sid.entites.Cinema;
 import org.sid.entites.Film;
+import org.sid.entites.Place;
+import org.sid.entites.ProjectionFilm;
 import org.sid.entites.Salle;
+import org.sid.entites.Seance;
 import org.sid.entites.Ticket;
 import org.sid.entites.Ville;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,6 +56,15 @@ public class CinemaRestController {
 	
 	@Autowired
 	private SalleRep salles;
+	
+	@Autowired
+	private SeanceRep seances;
+	
+	@Autowired
+	private PrejectioFIlmRep projections;
+	
+	@Autowired
+	private PlaceRep places;
 	
 	@GetMapping(path = "/imageFilm/{id}", produces=MediaType.IMAGE_JPEG_VALUE)
 	public byte[] image(@PathVariable (name="id") Long id) throws Exception {
@@ -81,9 +98,15 @@ public class CinemaRestController {
 	}
 	
 	@RequestMapping(value ="/saveSalle/{id}" , method=RequestMethod.POST)
-	public Salle saveSalle(@RequestBody Salle salle,@PathVariable Long id ){ 
+	public void saveSalle(@RequestBody Salle salle,@PathVariable Long id ){ 
 		salle.setCinema(cinemas.findById(id).get());
-		return salles.save(salle);
+		salles.save(salle);
+		for(int i=0;i<salle.getNombrePlaces();i++) {
+			Place place = new Place();
+			place.setNumero(i+1);
+			place.setSalle(salle);
+			places.save(place);
+		}
 	}
 
 	
@@ -108,6 +131,58 @@ public class CinemaRestController {
 		salle.setId(id);
 		salle.setCinema(cinemas.findById(id_cinema).get());
 		return salles.saveAndFlush(salle);
+	}
+	
+	@RequestMapping(value="/saveProjection/salle={id_salle}&film={id_film}&seance={id_seance}&price={price}", method=RequestMethod.POST)
+	public void addProjection( @PathVariable Long id_salle, @PathVariable Long id_seance , @PathVariable Long id_film , @PathVariable Long price){
+		Salle s = salles.findById(id_salle).get();
+		Seance sceance = seances.findById(id_seance).get();
+		Film f = films.findById(id_film).get();
+		ProjectionFilm pr = new ProjectionFilm();
+		//Collection<Ticket> tickets = new ArrayList<Ticket>();
+		pr.setFilms(f);
+		pr.setSeance(sceance);
+		pr.setSalle(s);
+		pr.setDateProjection(new Date());
+		pr.setPrix(price);
+		projections.save(pr);
+		s.getPlaces().forEach(place ->{
+			Ticket t = new Ticket();
+			t.setPlace(place);
+			t.setPrix(price);
+			t.setProjections(pr);
+			t.setNomClient("clientX");
+			t.setReservee(false);
+			ticketRep.save(t);
+		});
+		
+//		for( int i = 0 ; i < s.getPlaces().size() ; i++) {
+//			ticket = new Ticket();
+//			ticket.setPrix(price);
+//			ticket.setProjections(pr);
+//			ticket.setNomClient("clientX");
+//			ticket.setReservee(false);
+//			
+//			//tickets.add(ticket);
+//			ticketRep.save(ticket);
+//		}
+		
+//		s.getPlaces().forEach(place ->{
+//			Ticket ticket =  new Ticket();
+//			ticket.setPlace(place);
+//			ticket.setPrix(price);
+//			ticket.setProjections(pr);
+//			ticket.setNomClient("clientX");
+//			ticket.setReservee(false);
+//			tickets.add(ticket);
+//			ticketRep.save(ticket);
+//		});
+		
+		
+		
+//		pr.setTickets(tickets);
+		
+		
 	}
 }
 
