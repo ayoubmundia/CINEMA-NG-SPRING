@@ -66,18 +66,17 @@
             </div>
           </li>
         </ul> -->
-        <div class="" *ngIf="cinemas">
-          <div class="btn-group" *ngFor="let c of cinemas._embedded.cinemas" >
-            <button type="button" class="btn btn-danger">{{c.name}} </button>
-            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <div class="col-md-12" *ngIf="cinemas">
+          <div class=" col-md-3 btn-group" *ngFor="let c of cinemas._embedded.cinemas" >
+            <button type="button" class="btn btn-danger" (click)="onGetSalles(c)" [ngClass]="{'border': c == currentCinema}">{{c.name}} </button>
+            <button style="width:10px;" type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <span class="sr-only">Toggle Dropdown</span>
             </button>
             <div class="dropdown-menu">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
+              <a class="dropdown-item" (click)="onUpdatecinema()">Update Cinema</a>
+              <a class="dropdown-item" href="#">Delete Cinema</a>
               <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#">Separated link</a>
+              <a class="dropdown-item" href="#">Add New Salle</a>
             </div>
           </div>
         </div>
