@@ -228,7 +228,8 @@ export class CinemaComponent implements OnInit {
   }
   onSubmitUpdate(){
     let n = this.currentCinema._links.self.href.substring(this.currentCinema._links.self.href.lastIndexOf('/') + 1);
-    let v = this.currentCinema.id;
+    let v = this.currentVille.id;
+    console.log(this.cinema);
     this.cinemaService.updateCinema(this.cinema,n,v)
       .subscribe((data:any) =>{
         data => console.log(data)
