@@ -2,7 +2,8 @@
     <div class="card text-white bg-dark mb-3">
         <div class="card-header text-center">Gestion Des Films</div>
         <div class="card-body bg-light" style="border-color: black !important;">
-            <table class="table table-striped table-dark">
+            <button type="button" class="btn btn-danger"style="float: right;">Add New Film</button>
+            <table class="table table-striped table-dark" style="margin-top:3%">
                 <thead>
                     <tr>
                         <th scope="col">Photo</th>
@@ -11,14 +12,15 @@
                         <th scope="col">Description</th>
                         <th scope="col">DateSortie</th>
                         <th scope="col">Duree</th>
-                        
+
                         <th scope="col-md-4">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr *ngFor="let f of films._embedded.films">
                         <td>
-                            <img class="rounded-circle" width="80px" height="80px" src="http://localhost:8089/imageFilm/{{f.id}}">
+                            <img class="rounded-circle" width="80px" height="80px"
+                                src="http://localhost:8089/imageFilm/{{f.id}}">
                         </td>
                         <td>{{f.titre}}</td>
                         <td>{{f.realisateur}}</td>
@@ -27,7 +29,8 @@
                         <td>{{f.duree}}h</td>
                         <td>
                             <div class="row text-center">
-                                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#UpdateFilm" style="border-color: brown;" (click)="infoFilm(f)">Update</button>
+                                <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#UpdateFilm"
+                                    style="border-color: brown;" (click)="infoFilm(f)">Update</button>
                                 <button type="button" class="btn btn-danger" (click)="DeletFilm(f)">Delete</button>
                             </div>
                         </td>
@@ -38,51 +41,104 @@
     </div>
 </div>
 <!--Update Film-->
-<div class="modal fade" id="UpdateFilm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<div class="modal fade" id="UpdateFilm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLongTitle">Update Film</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <form [formGroup]="update_film" >
-        <div class="modal-body">
-            <div class="row">
-                
-                <div class="col-md-12 row" *ngIf="currentfilms" style="padding-bottom: 10px;">
-                    <div class="col-md-3">
-                        <img class="rounded-circle text-center" width="80px" height="80px" src="http://localhost:8089/imageFilm/{{currentfilms.id}}">
-                    </div>
-                    <div class="col-md-9">
-                        <div class="custom-file">
-                            <input type="file" class="custom-file-input" id="customFile">
-                            <label class="custom-file-label" for="customFile">Choose file</label>
-                          </div>
-                    </div>
-                    
-                </div>
-                <div class="col-md-12">
-                    <label class="control-label">Titre:</label>
-                    <input class="form-control" type="text" formControlName="titre">
-                    <label class="control-label">Description</label>
-                    <input class="form-control" type="number" formControlName="description">
-                    <label class="control-label">Realisateur</label>
-                    <input class="form-control" type="number" formControlName="realisateur">
-                    <label class="control-label">Duree</label>
-                    <input class="form-control" type="number" formControlName="duree">
-                    <label class="control-label">Date Sortie</label>
-                    <input class="form-control" type="text" formControlName="dateSortie">
-                </div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Update Film</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            
-          
+            <form [formGroup]="update_film" (ngSubmit)="UpdateFilm()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row justify-content-center" *ngIf="currentfilms" style="padding-bottom: 10px;">
+                                <div class="col-md-3 align-self-center">
+                                    <img class="rounded-circle text-center" width="100px" height="100px"
+                                        src="http://localhost:8089/imageFilm/{{currentfilms.id}}">
+                                </div>
+                                <div class="col-md-8 align-self-center">
+                                    <input type="file" id="myFile" name="filename2" (change)="onFileChanged($event)">
+                                </div>
+                                <div class="col-md-12 align-self-center">
+                                    <button class="btn btn-danger btn-block" (click)="onUpload()">Uplaod New Image</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="control-label">Titre:</label>
+                            <input class="form-control" type="text" formControlName="titre">
+                            <label class="control-label">Description</label>
+                            <input class="form-control" type="text" formControlName="description">
+                            <label class="control-label">Realisateur</label>
+                            <input class="form-control" type="text" formControlName="realisateur">
+                            <label class="control-label">Duree</label>
+                            <input class="form-control" type="number" formControlName="duree">
+                            <label class="control-label">Date Sortie</label>
+                            <input class="form-control" type="date" formControlName="dateSortie">
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" >Modifier</button>
+                </div>
+            </form>
         </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary" >Modifier</button>
-        </div>
-        </form>
-      </div>
     </div>
-  </div>
+</div>
+<!--Add Film-->
+<div class="modal fade" id="AddFilm" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Add New Film</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form [formGroup]="update_film" (ngSubmit)="UpdateFilm()">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row justify-content-center" *ngIf="currentfilms" style="padding-bottom: 10px;">
+                                <div class="col-md-3 align-self-center">
+                                    <img class="rounded-circle text-center" width="100px" height="100px"
+                                        src="http://localhost:8089/imageFilm/{{currentfilms.id}}">
+                                </div>
+                                <div class="col-md-8 align-self-center">
+                                    <input type="file" id="myFile" name="filename2">
+                                </div>
+                                <div class="col-md-12 align-self-center">
+                                    <button class="btn btn-danger btn-block">Uplaod New Image</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="control-label">Titre:</label>
+                            <input class="form-control" type="text" formControlName="titre">
+                            <label class="control-label">Description</label>
+                            <input class="form-control" type="text" formControlName="description">
+                            <label class="control-label">Realisateur</label>
+                            <input class="form-control" type="text" formControlName="realisateur">
+                            <label class="control-label">Duree</label>
+                            <input class="form-control" type="number" formControlName="duree">
+                            <label class="control-label">Date Sortie</label>
+                            <input class="form-control" type="date" formControlName="dateSortie">
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" >Modifier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

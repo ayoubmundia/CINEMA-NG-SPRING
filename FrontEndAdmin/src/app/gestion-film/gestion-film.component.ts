@@ -13,7 +13,8 @@ export class GestionFilmComponent implements OnInit {
   public films;
   public currentfilms;
   public update_film: FormGroup;
-  
+  public selectedFile: File;
+
   constructor(private formBuilder: FormBuilder,
     private http: HttpClient ) { }
     onGetAllFilm(){
@@ -25,6 +26,7 @@ export class GestionFilmComponent implements OnInit {
     );
     this.update_film = this.formBuilder.group({
       titre: ['', [Validators.required]],
+      photo : ['', [Validators.required]],
       description: ['', [Validators.required]],
       realisateur: ['', [Validators.required]],
       duree: ['', [Validators.required]],
@@ -48,15 +50,43 @@ export class GestionFilmComponent implements OnInit {
   infoFilm(f){
     this.currentfilms =f;
     sessionStorage.setItem("thisIdFilm",f.id);
-    console.log(f.dateSortie)
     this.update_film.setValue({
       titre: f.titre,
+      photo: f.photo,
       description: f.description,
       realisateur: f.realisateur,
       duree: f.duree,
       dateSortie: f.dateSortie,
     });
   }
-  
+  UpdateFilm(){
+    let id_film = sessionStorage.getItem("thisIdFilm")
+    var postData ={
+    "titre": this.update_film.get('titre').value,
+    "description": this.update_film.get('description').value,
+    "photo": this.update_film.get('photo').value,
+    "realisateur": this.update_film.get('realisateur').value,
+    "duree": this.update_film.get('duree').value,
+    "dateSortie": this.update_film.get('dateSortie').value,
+  }
+    this.http.put("http://localhost:8089/films/"+id_film,postData).subscribe(
+      ()=>{
+        $('#UpdateFilm').modal('hide');
+        this.onGetAllFilm();
+      }
+    );
+  }
+  onFileChanged(event) {
+    this.selectedFile = event.target.files[0]
+  }
+  onUpload() {
+    this.http.post('my-backend.com/file-upload', this.selectedFile)
+      .subscribe(
+        ()=>{
+          $('#UpdateFilm').modal('hide');
+          this.onGetAllFilm();
+        }
+      );
+  }
 
 }
