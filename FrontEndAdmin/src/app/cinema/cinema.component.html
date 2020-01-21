@@ -50,7 +50,7 @@
           style="float: right; background-color: white;color: black;" type="button">Add</button>
       </div>
       <div class="card-body">
-        <ul class="nav nav-tabs nav-pills nav-justified" *ngIf="cinemas">
+        <!-- <ul class="nav nav-tabs nav-pills nav-justified" *ngIf="cinemas">
           <li class="nav-item clickable" *ngFor="let c of cinemas._embedded.cinemas" >
             <a class="nav-link clickable" [ngClass]="{'border': c == currentCinema}"
               (click)="onGetSalles(c)">{{c.name}}
@@ -65,7 +65,23 @@
               </ul>
             </div>
           </li>
-        </ul>
+        </ul> -->
+        <div class="" *ngIf="cinemas">
+          <div class="btn-group" *ngFor="let c of cinemas._embedded.cinemas" >
+            <button type="button" class="btn btn-danger">{{c.name}} </button>
+            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="sr-only">Toggle Dropdown</span>
+            </button>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="#">Separated link</a>
+            </div>
+          </div>
+        </div>
+
         <div class="card  bg-light">
           <div class="col-md-12 padding-salle" *ngIf="salles">
             <div class="row justify-content-around">
