@@ -11,10 +11,12 @@ import javax.transaction.Transactional;
 
 import org.sid.dao.CinemaRep;
 import org.sid.dao.FilmRep;
+import org.sid.dao.SalleRep;
 import org.sid.dao.TicketRep;
 import org.sid.dao.VilleRep;
 import org.sid.entites.Cinema;
 import org.sid.entites.Film;
+import org.sid.entites.Salle;
 import org.sid.entites.Ticket;
 import org.sid.entites.Ville;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +45,9 @@ public class CinemaRestController {
 	
 	@Autowired
 	private VilleRep villes;
+	
+	@Autowired
+	private SalleRep salles;
 	
 	@GetMapping(path = "/imageFilm/{id}", produces=MediaType.IMAGE_JPEG_VALUE)
 	public byte[] image(@PathVariable (name="id") Long id) throws Exception {
@@ -73,6 +78,12 @@ public class CinemaRestController {
 	public Cinema saveCinema(@RequestBody Cinema c,@PathVariable Long id ){ 
 		c.setVille(villes.findById(id).get());
 		return cinemas.save(c);
+	}
+	
+	@RequestMapping(value ="/saveSalle/{id}" , method=RequestMethod.POST)
+	public Salle saveCinema(@RequestBody Salle salle,@PathVariable Long id ){ 
+		salle.setCinema(cinemas.findById(id).get());
+		return salles.save(salle);
 	}
 	
 	@RequestMapping(value ="/updateCinema/id={id}&ville={idVille}" , method=RequestMethod.PUT)
