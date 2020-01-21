@@ -10,12 +10,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { CinemaComponent } from './cinema/cinema.component';
 import { PageErrorComponent } from './page-error/page-error.component';
+import { GestionFilmComponent } from './gestion-film/gestion-film.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CinemaComponent,
-    PageErrorComponent
+    PageErrorComponent,
+    GestionFilmComponent
   ],
   imports: [
     BrowserModule,

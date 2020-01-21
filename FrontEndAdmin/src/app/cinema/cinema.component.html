@@ -85,7 +85,7 @@
         <div class="card  bg-light">
           <div class="col-md-12 padding-salle" *ngIf="salles">
             <div class="row justify-content-around">
-              <div class="card bg-dark col-md-5 mb-3" *ngFor="let s of salles._embedded.salles">
+              <div class="card bg-dark col-md-5 mb-3" *ngFor="let s of salles._embedded.salles ">
                 <div class="card-header">{{s.name}} 
                   <a (click)="onGetInfoSalles(s)" data-toggle="modal" data-target="#UpdateSalle">
                     <i class="fas fa-pen rounded-circle pd0 butn-vio"></i>
