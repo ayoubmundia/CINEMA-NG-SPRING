@@ -1,0 +1,90 @@
+<div class="row">
+    <div class="col-md-3 padding-ville ">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header text-center">List Of City</div>
+            <div class="card-body">
+                <ul class="list-group rounded-bottom" *ngIf="villes">
+                    <li *ngFor="let v of villes._embedded.villes" 
+                    class="text-center list-group-item list-group-item-action list-group-item-light clickable"
+                    [ngClass]="{'active-iteam': v == currentVille}"
+                    (click)="onGetCinema(v)">
+                        {{v.name}}
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9 padding-cinema ">
+        <div class="card text-white bg-dark mb-3">
+            <div class="card-header text-center">List Of Cinema</div>
+            <div class="card-body">
+                <ul class="nav nav-tabs nav-pills nav-justified" *ngIf="cinemas">
+                    <li class="nav-item clickable"  *ngFor="let c of cinemas._embedded.cinemas">
+                      <a class="nav-link clickable" [ngClass]="{'border': c == currentCinema}" (click)="onGetSalles(c)" >{{c.name}}</a>
+                    </li>
+                </ul>
+                <div class="card  bg-light">
+                    <div class="col-md-12 padding-salle" *ngIf="salles">
+                        <div class="row justify-content-around">
+                            <div class="card bg-dark col-md-5 mb-3" *ngFor="let s of salles._embedded.salles">
+                                <div class="card-header">{{s.name}}</div>
+                                <div class="card-body" *ngIf="s.projections">
+                                    <div class="row">
+                                        <div class="col-md-5">
+                                          <img  width="160" height="180" src="{{cinemaService.host+'/imageFilm/'+s.projections._embedded.projectionFilms[0].film.id}}"/>
+                                        </div>
+                                        <div class="col-md-7">
+                                          <ul class="list-group rounded-bottom">
+                                            <li class="text-center list-group-item list-group-item-action list-group-item-light " style="padding: .2rem .25rem !important;">
+                                                Séances:</li>
+                                            <li (click)="onGetTicketsPlaces(p)" [ngClass]="p==currentProjection?'active':''" *ngFor="let p of s.projections._embedded.projectionFilms" 
+                                                class="text-center list-group-item list-group-item-action list-group-item-light clickable" style="padding: .2rem .25rem !important;">
+                                              {{p.seance.heureDebut}} => Prix: {{p.prix|number:'0.00'}} DH
+                                            </li>
+                                          </ul>
+                                        </div>
+                                        <!-- <img class="card-img-top" height="300" width="180" src="{{cinemaService.host+'/imageFilm/'+s.projections._embedded.projectionFilms[0].film.id}}" alt="Card image cap">
+                                        <div class="card-body">
+                                          <ul class="list-group rounded-bottom">
+                                            <li class="text-center list-group-item list-group-item-action list-group-item-light " style="padding: .2rem .25rem !important;">
+                                                Séances:</li>
+                                            <li (click)="onGetTicketsPlaces(p)" [ngClass]="p==currentProjection?'active':''" *ngFor="let p of s.projections._embedded.projectionFilms" 
+                                                class="text-center list-group-item list-group-item-action list-group-item-light clickable" style="padding: .2rem .25rem !important;">
+                                              {{p.seance.heureDebut}} => Prix: {{p.prix|number:'0.00'}} DH
+                                            </li>
+                                          </ul>
+                                        </div> -->
+                                      </div>
+                                    <div class="row" >
+                                        <div *ngIf="currentProjection">
+                                            <div *ngIf="s.id==currentProjection.salle.id">
+                                              <div class="col-md-12" *ngIf="currentProjection.tickets" style="margin-left: 4%;padding: 4%;">
+                                                <button class="{{getTicketClass(t)}}" (click)="OnSelectTicket(t)" [disabled]="t.reserve==true" *ngFor="let t of currentProjection.tickets._embedded.tickets">
+                                                  {{t.place.numero}}
+                                                </button>
+                                              </div>
+                                              <div *ngIf="selectedTickets?.length>0">
+                                                <form #f="ngForm" (ngSubmit)="onPayTickets(f.value)">
+                                                  <div class="form-group">
+                                                    <label class="control-label">Nom client:</label>
+                                                    <input class="form-control" type="text" name="nomClient" ngModel>
+                                                  </div>
+                                                  <div class="form-group">
+                                                    <label class="control-label">Code payement:</label>
+                                                    <input class="form-control" type="text" name="codePayement" ngModel>
+                                                  </div>
+                                                  <button type="submit" class="btn btn-danger btn-lg btn-block">Payer</button>
+                                                </form>
+                                              </div>
+                                            </div>
+                                          </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

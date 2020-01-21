@@ -1,0 +1,16 @@
+.nav-link-red:hover{
+    color: rgba(255, 0, 0, 0.7) !important;
+}
+.nav-link-red:focus{
+    color: rgba(255, 0, 0, 0.85) !important;
+}
+.nav-link-red:active{
+    color: rgba(255, 0, 0, 0.85) !important;
+}
+.active-red{
+    color: rgba(255, 0, 0, 0.842) !important;
+}
+.navbar-dark .navbar-nav .active-red>.nav-link{
+    color: rgba(255, 0, 0) !important;
+
+}

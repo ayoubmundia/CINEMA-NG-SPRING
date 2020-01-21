@@ -1,0 +1,259 @@
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css"
+       integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+<div class="row">
+  <div class="col-md-3 padding-ville ">
+    <div class="card text-white bg-dark mb-3">
+      <div class="card-header text-center">List Of City</div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-8" style="padding: 0%;">
+            <ul class="list-group rounded-bottom" *ngIf="villes">
+              <li *ngFor="let v of villes._embedded.villes"
+                class="text-center list-group-item list-group-item-action list-group-item-light clickable"
+                [ngClass]="{'active-iteam': v == currentVille}" (click)="onGetCinema(v)">
+                {{v.name}}
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-2" style="padding: 0%;">
+            <ul class="list-group rounded-bottom" *ngIf="villes">
+              <li *ngFor="let v of villes._embedded.villes"
+                class="list-group-item list-group-item-action list-group-item-danger clickable" (click)="onGetCinema(v)"
+                data-toggle="modal" data-target="#UpdateCity">
+                <i class="fas fa-edit" aria-hidden="true"></i>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-2" style="padding: 0%;">
+            <ul class="list-group rounded-bottom" *ngIf="villes">
+              <li *ngFor="let v of villes._embedded.villes"
+                class="list-group-item list-group-item-action list-group-item-info clickable" (click)="onDeletVille(v)">
+                <i class="fas fa-trash" aria-hidden="true"></i>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-12" style="padding-top: 4%;">
+            <button type="submit" class="btn btn-light btn-block" data-toggle="modal" data-target="#AddCity">Add
+              City</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-9 padding-cinema ">
+    <div class="card text-white bg-dark mb-3">
+      <div class="card-header text-center">
+        <span>
+          List of cinemas
+        </span>
+        <button *ngIf="currentVille" _ngcontent-vvx-c1="" class="btn btn-link" data-target="#addcinemaModel" data-toggle="modal"
+          style="float: right; background-color: white;color: black;" type="button">Add</button>
+      </div>
+      <div class="card-body">
+        <ul class="nav nav-tabs nav-pills nav-justified" *ngIf="cinemas">
+          <li class="nav-item clickable" *ngFor="let c of cinemas._embedded.cinemas" >
+            <a class="nav-link clickable" [ngClass]="{'border': c == currentCinema}"
+              (click)="onGetSalles(c)">{{c.name}}
+            </a>
+            <div class="dropdown">
+              <span style="float: right;" (click)="onUpdatecinema()"  data-toggle="dropdown" data-hover="dropdown">
+                <i  class="fas fa-ellipsis-v"></i>
+              </span>
+              <ul class="dropdown-menu">
+                <li>Update</li>
+                <li>Delete</li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+        <div class="card  bg-light">
+          <div class="col-md-12 padding-salle" *ngIf="salles">
+            <div class="row justify-content-around">
+              <div class="card bg-dark col-md-5 mb-3" *ngFor="let s of salles._embedded.salles">
+                <div class="card-header">{{s.name}}</div>
+                <div class="card-body" *ngIf="s.projections">
+                  <div class="row">
+                    <div class="col-md-5">
+                      <img width="160" height="180"
+                        src="{{cinemaService.host+'/imageFilm/'+s.projections._embedded.projectionFilms[0].film.id}}" />
+                    </div>
+                    <div class="col-md-7">
+                      <ul class="list-group rounded-bottom">
+                        <li class="text-center list-group-item list-group-item-action list-group-item-light "
+                          style="padding: .2rem .25rem !important;">
+                          Séances:</li>
+                        <li (click)="onGetTicketsPlaces(p)" [ngClass]="p==currentProjection?'active':''"
+                          *ngFor="let p of s.projections._embedded.projectionFilms"
+                          class="text-center list-group-item list-group-item-action list-group-item-light clickable"
+                          style="padding: .2rem .25rem !important;">
+                          {{p.seance.heureDebut}} => Prix: {{p.prix|number:'0.00'}} DH
+                        </li>
+                      </ul>
+                    </div>
+                    <!-- <img class="card-img-top" height="300" width="180" src="{{cinemaService.host+'/imageFilm/'+s.projections._embedded.projectionFilms[0].film.id}}" alt="Card image cap">
+                                        <div class="card-body">
+                                          <ul class="list-group rounded-bottom">
+                                            <li class="text-center list-group-item list-group-item-action list-group-item-light " style="padding: .2rem .25rem !important;">
+                                                Séances:</li>
+                                            <li (click)="onGetTicketsPlaces(p)" [ngClass]="p==currentProjection?'active':''" *ngFor="let p of s.projections._embedded.projectionFilms"
+                                                class="text-center list-group-item list-group-item-action list-group-item-light clickable" style="padding: .2rem .25rem !important;">
+                                              {{p.seance.heureDebut}} => Prix: {{p.prix|number:'0.00'}} DH
+                                            </li>
+                                          </ul>
+                                        </div> -->
+                  </div>
+                  <div class="row">
+                    <div *ngIf="currentProjection">
+                      <div *ngIf="s.id==currentProjection.salle.id">
+                        <div class="col-md-12" *ngIf="currentProjection.tickets" style="margin-left: 4%;padding: 4%;">
+                          <button class="{{getTicketClass(t)}}" (click)="OnSelectTicket(t)" [disabled]="t.reserve==true"
+                            *ngFor="let t of currentProjection.tickets._embedded.tickets">
+                            {{t.place.numero}}
+                          </button>
+                        </div>
+                        <div *ngIf="selectedTickets?.length>0">
+                          <form #f="ngForm" (ngSubmit)="onPayTickets(f.value)">
+                            <div class="form-group">
+                              <label class="control-label">Nom client:</label>
+                              <input class="form-control" type="text" name="nomClient" ngModel>
+                            </div>
+                            <div class="form-group">
+                              <label class="control-label">Code payement:</label>
+                              <input class="form-control" type="text" name="codePayement" ngModel>
+                            </div>
+                            <button type="submit" class="btn btn-danger btn-lg btn-block">Payer</button>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Shadow was here-->
+<!-- Modal Add City-->
+<div class="modal fade" id="AddCity" tabindex="-1" role="dialog" aria-labelledby="AddCityLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="AddCityLabel">Add New City</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="new_city" (ngSubmit)="addNewCity()">
+        <div class="modal-body">
+          <label class="control-label">Name of City:</label>
+          <input class="form-control" type="text" formControlName="name_new_city">
+          <label class="control-label">Longitude of City:</label>
+          <input class="form-control" type="number" formControlName="longitude_new_city">
+          <label class="control-label">Altitude of City:</label>
+          <input class="form-control" type="number" formControlName="longitude_new_city">
+          <label class="control-label">Latitude of City:</label>
+          <input class="form-control" type="number" formControlName="latitude_new_city">
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Update City-->
+<div class="modal fade" id="UpdateCity" tabindex="-1" role="dialog" aria-labelledby="UpdateCityLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content" *ngIf="currentVille">
+      <div class="modal-header">
+        <h5 class="modal-title" id="UpdateCityLabel">Update City</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="up_city" (ngSubmit)="UpdateCity(currentVille)">
+        <div class="modal-body">
+          <label class="control-label">Name of City:</label>
+          <input class="form-control" type="text" formControlName="name_up_city" value="{{currentVille.name}}">
+          <label class="control-label">Longitude of City:</label>
+          <input class="form-control" type="number" formControlName="longitude_up_city"
+            value="{{currentVille.longitude}}">
+          <label class="control-label">Altitude of City:</label>
+          <input class="form-control" type="number" formControlName="altitude_up_city" value="{{currentVille.altiude}}">
+          <label class="control-label">Latitude of City:</label>
+          <input class="form-control" type="number" formControlName="latitude_up_city"
+            value="{{currentVille.latitude}}">
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Save changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- Modal Add  Cinema-->
+<div class="modal fade bd-example-modal-lg" id="addcinemaModel" tabindex="-1" role="dialog"
+  aria-labelledby="myLargeModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" data-target="#modal">
+    <div class="modal-content">
+      <form (ngSubmit)="onSubmit()">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel" *ngIf="currentVille">Ajouter Une Cinema :
+            {{ currentVille.name }}</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Nom</span>
+            </div>
+            <input type="text" name="name" [(ngModel)]="cinema.name" class="form-control" aria-label="Default"
+              aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Logitude</span>
+            </div>
+            <input type="number" name="logitude" [(ngModel)]="cinema.logitude" class="form-control" aria-label="Default"
+              aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Latitude</span>
+            </div>
+            <input type="number" name="latitude" [(ngModel)]="cinema.latitude " class="form-control"
+              aria-label="Default" aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Altitude</span>
+            </div>
+            <input type="number" name="altitude" [(ngModel)]="cinema.altitude" class="form-control" aria-label="Default"
+              aria-describedby="inputGroup-sizing-default" required>
+          </div>
+          <div class="input-group mb-3">
+            <div class="input-group-prepend">
+              <span class="input-group-text" id="inputGroup-sizing-default">Nbr Salles</span>
+            </div>
+            <input type="number" name="nombreSalles" [(ngModel)]="cinema.nombreSalles" class="form-control"
+              aria-label="Default" aria-describedby="inputGroup-sizing-default" required>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="onCancel()">Annuler</button>
+          <button type="submit" class="btn btn-primary">Ajouter</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
