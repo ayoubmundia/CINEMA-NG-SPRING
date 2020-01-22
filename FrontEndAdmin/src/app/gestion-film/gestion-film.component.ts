@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 declare var $ : any;
 
@@ -21,7 +21,6 @@ export class GestionFilmComponent implements OnInit {
       this.http.get("http://localhost:8089/films").subscribe(
     (data)=>{
       this.films= data;
-      console.log(this.films);
     }
     );
     this.update_film = this.formBuilder.group({
@@ -77,14 +76,34 @@ export class GestionFilmComponent implements OnInit {
     );
   }
   onFileChanged(event) {
+
     this.selectedFile = event.target.files[0]
   }
+
+
   onUpload() {
-    this.http.post('my-backend.com/file-upload', this.selectedFile)
+  //   let headers = new HttpHeaders({
+  //     'Content-Type': 'multipart/form-data'
+  //  });
+  //  let options = {
+  //     headers: headers
+  //  }
+  
+    // this.http is the injected HttpClient
+    const uploadData = new FormData();
+    uploadData.append('file', this.selectedFile, this.selectedFile.name);
+    
+
+   let id_film = sessionStorage.getItem("thisIdFilm")
+    console.log(this.selectedFile);
+    this.http.post('http://localhost:8089/uploadFile/id='+id_film, uploadData)
       .subscribe(
         ()=>{
           $('#UpdateFilm').modal('hide');
-          this.onGetAllFilm();
+          document.location.reload(true)
+        },
+        ()=>{
+          document.location.reload(true)
         }
       );
   }
