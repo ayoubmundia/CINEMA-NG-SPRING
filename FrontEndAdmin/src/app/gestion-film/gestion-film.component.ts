@@ -13,6 +13,7 @@ export class GestionFilmComponent implements OnInit {
   public films;
   public currentfilms;
   public update_film: FormGroup;
+  public new_film: FormGroup;
   public selectedFile: File;
 
   constructor(private formBuilder: FormBuilder,
@@ -21,6 +22,7 @@ export class GestionFilmComponent implements OnInit {
       this.http.get("http://localhost:8089/films").subscribe(
     (data)=>{
       this.films= data;
+      console.log(data);
     }
     );
     this.update_film = this.formBuilder.group({
@@ -30,6 +32,13 @@ export class GestionFilmComponent implements OnInit {
       realisateur: ['', [Validators.required]],
       duree: ['', [Validators.required]],
       dateSortie: ['', [Validators.required]]
+    });
+    this.new_film = this.formBuilder.group({
+      new_titre: ['', [Validators.required]],
+      new_description: ['', [Validators.required]],
+      new_realisateur: ['', [Validators.required]],
+      new_duree: ['', [Validators.required]],
+      new_dateSortie: ['', [Validators.required]]
     });
     }
   ngOnInit() {
@@ -80,7 +89,21 @@ export class GestionFilmComponent implements OnInit {
     this.selectedFile = event.target.files[0]
   }
 
-
+  addFilm(){
+    var postData ={
+      "titre": this.new_film.get('new_titre').value,
+      "description": this.new_film.get('new_description').value,
+      "realisateur": this.new_film.get('new_realisateur').value,
+      "duree": this.new_film.get('new_duree').value,
+      "dateSortie": this.new_film.get('new_dateSortie').value,
+    }
+    this.http.post("http://localhost:8089/films",postData).subscribe(
+      ()=>{
+        $('#AddFilm').modal('hide');
+        this.onGetAllFilm();
+      }
+    );
+  }
   onUpload() {
   //   let headers = new HttpHeaders({
   //     'Content-Type': 'multipart/form-data'

@@ -2,7 +2,7 @@
     <div class="card text-white bg-dark mb-3">
         <div class="card-header text-center">Gestion Des Films</div>
         <div class="card-body bg-light" style="border-color: black !important;">
-            <button type="button" class="btn btn-danger"style="float: right;">Add New Film</button>
+            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#AddFilm" style="float: right;">Add New Film</button>
             <table class="table table-striped table-dark" style="margin-top:3%">
                 <thead>
                     <tr>
@@ -18,9 +18,13 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let f of films._embedded.films">
-                        <td>
+                        <td *ngIf="f.photo">
                             <img class="rounded-circle" width="80px" height="80px"
                                 src="http://localhost:8089/imageFilm/{{f.id}}">
+                        </td>
+                        <td *ngIf="!f.photo">
+                            <img class="rounded-circle" width="80px" height="80px"
+                                src="../../assets/not-found.png">
                         </td>
                         <td>{{f.titre}}</td>
                         <td>{{f.realisateur}}</td>
@@ -56,9 +60,13 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="row justify-content-center" *ngIf="currentfilms" style="padding-bottom: 10px;">
-                                <div class="col-md-3 align-self-center">
+                                <div class="col-md-3 align-self-center" *ngIf="currentfilms.photo">
                                     <img class="rounded-circle text-center" width="100px" height="100px"
                                         src="http://localhost:8089/imageFilm/{{currentfilms.id}}">
+                                </div>
+                                <div class="col-md-3 align-self-center" *ngIf="!currentfilms.photo">
+                                    <img class="rounded-circle text-center" width="100px" height="100px"
+                                        src="../../assets/not-found.png">
                                 </div>
                                 <div class="col-md-8 align-self-center">
                                     <input type="file" id="myFile" name="filename2" (change)="onFileChanged($event)">
@@ -102,41 +110,27 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form [formGroup]="update_film" (ngSubmit)="UpdateFilm()">
+            <form [formGroup]="new_film" (ngSubmit)="addFilm()">
                 <div class="modal-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <div class="row justify-content-center" *ngIf="currentfilms" style="padding-bottom: 10px;">
-                                <div class="col-md-3 align-self-center">
-                                    <img class="rounded-circle text-center" width="100px" height="100px"
-                                        src="http://localhost:8089/imageFilm/{{currentfilms.id}}">
-                                </div>
-                                <div class="col-md-8 align-self-center">
-                                    <input type="file" id="myFile" name="filename2">
-                                </div>
-                                <div class="col-md-12 align-self-center">
-                                    <button class="btn btn-danger btn-block">Uplaod New Image</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
                             <label class="control-label">Titre:</label>
-                            <input class="form-control" type="text" formControlName="titre">
+                            <input class="form-control" type="text" formControlName="new_titre">
                             <label class="control-label">Description</label>
-                            <input class="form-control" type="text" formControlName="description">
+                            <input class="form-control" type="text" formControlName="new_description">
                             <label class="control-label">Realisateur</label>
-                            <input class="form-control" type="text" formControlName="realisateur">
+                            <input class="form-control" type="text" formControlName="new_realisateur">
                             <label class="control-label">Duree</label>
-                            <input class="form-control" type="number" formControlName="duree">
+                            <input class="form-control" type="number" formControlName="new_duree">
                             <label class="control-label">Date Sortie</label>
-                            <input class="form-control" type="date" formControlName="dateSortie">
+                            <input class="form-control" type="date" formControlName="new_dateSortie">
                         </div>
                     </div>
 
 
                 </div>
                 <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" >Modifier</button>
+                    <button type="submit" class="btn btn-primary" >Ajouter</button>
                 </div>
             </form>
         </div>
